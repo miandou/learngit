@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="email.dao.LogDao">
+
+    <resultMap id="logResultMap" type="email.bean.Log">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="content" column="content"/>
+        <result property="create_date" column="create_date"/>
+        <result property="protocol_type" column="protocol_type"/>
+        <result property="operate_type" column="operate_type"/>
+        <result property="ip" column="ip"/>
+    </resultMap>
+
+    <insert id="insert" parameterType="email.bean.Log" useGeneratedKeys="true" keyProperty="id">
+        insert into log(username,content,protocol_type,operate_type,ip) VALUES
+        (#{username},#{content},#{protocol_type},#{operate_type},#{ip})
+    </insert>
+
+    <select id="getLogsByProtocol" resultMap="logResultMap">
+        select * from log where protocol_type=#{0} limit #{1},10
+    </select>
+
+    <select id="getLogsByProtocolPageBySinceId" resultMap="logResultMap">
+        select * from log where protocol_type=#{0} and id &gt;#{1} limit#{2}
+    </select>
+
+    <select id="getLogsByProtocolAndDate" resultMap="logResultMap">
+        select * from log where protocol_type=#{0}
+        and create_date &gt;= #{1}
+        and create_date &lt;= #{2}
+        limit #{3},10
+    </select>
+
+    <select id="getLogsByProtocolAndOperate" resultMap="logResultMap">
+        select * from log where protocol_type=#{0}
+                                and operate_type=#{1}
+                                limit #{2},10
+    </select>
+
+    <delete id="deleteById">
+        delete from log where id=#{id}
+    </delete>
+
+    <delete id="deleteAll">
+        delete from log where protocol_type=#{protocol}
+    </delete>
+    
+    <select id="countlog" resultType="int">
+        select count(*) from log where protocol_type=#{0}
+    </select>
+
+</mapper>
+    

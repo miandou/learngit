@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="email.dao.UserDao">
+
+    <resultMap id="userResultMap" type="email.bean.User">
+        <id property="id" column="id"/>
+        <result property="username" column="username"/>
+        <result property="password" column="password"/>
+        <result property="nickname" column="nickname"/>
+        <result property="power" column="power"/>
+        <result property="disable_flag" column="disable_flag"/>
+        <result property="create_date" column="create_date"/>
+        <result property="isfilter" column="isfilter"/>
+
+    </resultMap>
+
+    <insert id="insert" parameterType="email.bean.User" useGeneratedKeys="true" keyProperty="id">
+        insert into user(username,password,nickname,power,disable_flag,create_date,isfilter)
+        values(#{username},#{password},#{nickname},#{power},#{disable_flag},#{create_date},
+        #{isfilter})
+    </insert>
+
+    <delete id="deleteById">
+        delete from user where id=#{id}
+    </delete>
+
+    <select id="getUsers" resultMap="userResultMap">
+        select * from user
+        where id &gt; #{0}
+        limit #{1}
+    </select>
+
+    <select id="getById" resultMap="userResultMap">
+        select * from user
+           where id=#{id}
+    </select>
+
+    <select id="getByUserName" resultMap="userResultMap">
+        select * from user
+        where username=#{username}
+    </select>
+
+    <update id="upToAdmin">
+        update user set power=1
+          where id=#{user_id}
+    </update>
+
+    <update id="updateDisable">
+        update user set disable_flag=#{1}
+        where id=#{0}
+    </update>
+
+    <update id="updateFilter">
+        update user set isfilter=#{1}
+        where id=#{0}
+    </update>
+
+    <update id="updatePassword">
+        update user set password =#{1}
+        where id=#{0}
+    </update>
+
+    <update id="updateNickName">
+        update user set nickname=#{1}
+        where id=#{0}
+    </update>
+    
+     <select id="getUsersPC" resultMap="userResultMap">
+        select * from user limit #{id},10
+    </select>
+    
+    <select id="countUser" resultType="int">
+        select count(*) from user
+    </select>
+    
+    <select id="getAll" resultMap="userResultMap">
+        select * from user
+    </select>
+</mapper>
+    

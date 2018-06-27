@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="email.dao.SysParameterDao">
+    <resultMap id="SysParameterResultMap" type="email.bean.Sys_Parameter">
+        <result property="port_smtp" column="port_smtp"/>
+        <result property="port_pop3" column="port_pop3"/>
+        <result property="name_domain" column="name_domain"/>
+        <result property="size_pop3" column="size_pop3"/>
+        <result property="size_smtp" column="size_smtp"/>
+        <result property="flag_smtp" column="flag_smtp"/>
+        <result property="flag_pop3" column="flag_pop3"/>
+        <result property="pos_pop3" column="pos_pop3"/>
+        <result property="pos_smtp" column="pos_smtp"/>
+        <result property="size" column="size"/>
+    </resultMap>
+
+    <select id="getAll" resultMap="SysParameterResultMap">
+        select * from sys_parameter
+    </select>
+
+    <update id="updateSMTPPort">
+        update sys_parameter set port_smtp=#{newPort}
+    </update>
+
+    <update id="updatePOP3Port">
+        update sys_parameter set port_pop3=#{newPort}
+    </update>
+
+    <update id="updateDomain">
+        update sys_parameter set name_domain=#{newDomain}
+    </update>
+
+    <update id="updatePOP3LogSize">
+        update sys_parameter set size_pop3=#{newLogSize}
+    </update>
+
+    <update id="updateSMTPLogSize">
+        update sys_parameter set size_smtp=#{newLogSize}
+    </update>
+
+    <update id="updateSMTPState">
+        update sys_parameter set flag_smtp=#{open}
+    </update>
+
+    <update id="updatePOP3Sate">
+        update sys_parameter set flag_pop3=#{open}
+    </update>
+
+    <update id="updateSMTPLogLocation">
+        update sys_parameter set pos_smtp=#{location}
+    </update>
+
+    <update id="updatePOP3LogLocation">
+        update sys_parameter set pos_pop3=#{location}
+    </update>
+
+    <update id="updateEmailSize">
+        update sys_parameter sp set sp.size=#{size}
+    </update>
+</mapper>
+    

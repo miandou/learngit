@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="email.dao.EmailDao">
+
+    <resultMap id="emailResultMap" type="email.bean.Email">
+        <id property="id" column="id"/>
+        <result property="user_id" column="user_id"/>
+        <result property="title" column="title"/>
+        <result property="send_date" column="send_date"/>
+        <result property="send_by" column="send_by"/>
+        <result property="read_flag" column="read_flag"/>
+        <result property="content" column="content"/>
+        <association property="owner" column="user_id" javaType="email.bean.User"
+                     select="email.dao.UserDao.getById"/>
+        <collection property="email_Files" javaType="ArrayList" fetchType="lazy"
+                    column="id" ofType="email.bean.Email_File"
+                    select="selectEmailFileById"/>
+    </resultMap>
+
+    <resultMap id="emailFileResultMap" type="email.bean.Email_File">
+      <id property="id" column="id"/>
+      <result property="file_path" column="file_path"/>
+      <result property="file_name" column="file_name"/>
+      <result property="email_id" column="email_id"/>
+      <association property="email" column="email_id" javaType="email.bean.Email"
+                   select="getById"/>
+  </resultMap>
+
+
+    <select id="selectEmailFileById" resultMap="emailFileResultMap">
+        select * from email_file where email_id=#{id}
+    </select>
+    
+    <select id="getState" resultType="int">
+    	select read_flag from email where send_by=#{send_by}
+    	and TIMESTAMPDIFF(SECOND,#{time},send_date)&lt;=2 and TIMESTAMPDIFF(SECOND,#{time},send_date)>=0
+    </select>
+
+    <insert id="insert" parameterType="email.bean.Email" useGeneratedKeys="true" keyProperty="id">
+        insert into email(user_id,title,send_by,read_flag,content)
+        values(#{user_id},#{title},#{send_by},#{read_flag},#{content})
+    </insert>
+
+    <insert id="insertEmailFile" parameterType="email.bean.Email_File" useGeneratedKeys="true" keyProperty="id">
+        insert into email_file(email_id,file_path,file_name)
+        values(#{email_id},#{file_path},#{file_name})
+    </insert>
+
+    <delete id="deleteById">
+        delete from email where id=#{id}
+    </delete>
+
+    <delete id="deleteOldestEmail">
+        delete from email where user_id=#{user_id} ORDER BY id asc limit 1;
+    </delete>
+    
+    <delete id="deleteOldestEmails">
+        delete from email where user_id=#{0} ORDER BY id asc limit #{1};
+    </delete>
+    
+    <update id="updateReadFlag">
+        update email set read_flag=1 where id=#{email_id}
+    </update>
+    
+    <update id="updateAllReadFlag">
+        update email set read_flag=1 where user_id=#{user_id}
+    </update>
+    
+    <select id="getById" resultMap="emailResultMap">
+        select * from email where id=#{id}
+    </select>
+
+    <select id="getEmails" resultMap="emailResultMap">
+        select * from email where user_id=#{0} and id>#{1} limit #{2}
+    </select>
+
+    <select id="countByUserId" resultType="int">
+        select count(*) from email where user_id=#{user_id}
+    </select>
+
+    <select id="getEmailByNumber" resultMap="emailResultMap">
+        select * from email where user_id=#{0} ORDER by id asc limit #{1},1
+    </select>
+
+    <select id="getEmailsByUserId" resultMap="emailResultMap">
+        select * from email where user_id=#{0} order by id asc
+    </select>
+
+    <update id="setDeleteFlag">
+        update email set del_flag=1 where id = (select a.id from
+        (select id from email where user_id=#{0} ORDER BY id asc limit #{1},1)a);
+    </update>
+
+    <delete id="deleteEmail">
+        delete from email where user_id=#{user_id} and del_flag=1
+    </delete>
+</mapper>
+    
